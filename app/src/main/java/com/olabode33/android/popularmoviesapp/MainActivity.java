@@ -1,6 +1,9 @@
 package com.olabode33.android.popularmoviesapp;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,6 +20,7 @@ import android.widget.Toast;
 import com.olabode33.android.popularmoviesapp.model.Movie;
 import com.olabode33.android.popularmoviesapp.utils.JsonUtils;
 import com.olabode33.android.popularmoviesapp.utils.NetworkUtils;
+import com.olabode33.android.popularmoviesapp.viewmodel.FavoriteMovieViewModel;
 
 import java.io.IOException;
 import java.net.URL;
@@ -40,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     RecyclerView.Adapter mAdapter;
     RecyclerView.LayoutManager mLayoutManager;
+    FavoriteMovieViewModel mFavoriteMovieViewModel;
 
     List<Movie> mMovieList;
 
@@ -67,12 +72,15 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_sort_by_popularity:
-                makeApiCall(getString(R.string.param_sort_by_popularity));
+                makeApiCall(NetworkUtils.PARAM_SORT_BY_POPULARITY);
                 setTitle(getString(R.string.title_action_sort_by_popularity) + " Movies");
                 break;
             case R.id.action_sort_by_rating:
-                makeApiCall(getString(R.string.param_sort_by_rating));
+                makeApiCall(NetworkUtils.PARAM_SORT_BY_RATING);
                 setTitle(getString(R.string.title_action_sort_by_rating) + " Movies");
+                break;
+            case R.id.action_sort_by_favorite:
+                loadFavoriteMovie();
                 break;
         }
 
@@ -88,8 +96,8 @@ public class MainActivity extends AppCompatActivity {
         }
         else{
             Toast.makeText(this, getString(R.string.error_no_network), Toast.LENGTH_LONG).show();
+            loadFavoriteMovie();
             hideProgressBar();
-            mErrorNoNetworkTextView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -97,6 +105,21 @@ public class MainActivity extends AppCompatActivity {
         if(mLoadingMovies != null && mLoadingMovies.isShown()){
             mLoadingMovies.setVisibility(View.INVISIBLE);
         }
+    }
+
+    private void loadFavoriteMovie(){
+        setTitle(getString(R.string.title_action_sort_by_favorite) + " Movies");
+
+        final MoviesAdapter moviesAdapter = new MoviesAdapter(new ArrayList<Movie>(), this);
+        mMoviesRecyclerView.setAdapter(moviesAdapter);
+
+        mFavoriteMovieViewModel = ViewModelProviders.of(this).get(FavoriteMovieViewModel.class);
+        mFavoriteMovieViewModel.getFavoriteMovieList().observe(MainActivity.this, new Observer<List<Movie>>() {
+            @Override
+            public void onChanged(@Nullable List<Movie> movieList) {
+                moviesAdapter.addMovies(movieList);
+            }
+        });
     }
 
     private class TheMovieDbApiTask extends AsyncTask<URL, Void, String>{
