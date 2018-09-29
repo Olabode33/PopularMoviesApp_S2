@@ -1,19 +1,29 @@
 package com.olabode33.android.popularmoviesapp.model;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
+
+import org.parceler.Parcel;
+
 /**
  * Created by obello004 on 8/21/2018.
  */
 
+@Parcel
+@Entity(tableName = "FavoriteMovies")
 public class Movie {
-    private String id;
-    private String voteAverage;
-    private String title;
-    private String posterPath;
-    private String originalLanguage;
-    private String originalTitle;
-    private String backdropPath;
-    private String overview;
-    private String releaseDate;
+    @PrimaryKey @NonNull
+    public String id;
+    String voteAverage;
+    String title;
+    String posterPath;
+    String originalLanguage;
+    String originalTitle;
+    String backdropPath;
+    String overview;
+    String releaseDate;
 
     final static String THEMOVIEDB_BASE_IMAGE_URL = "http://image.tmdb.org/t/p/";
     final static String POSTER_IMAGE_PATH = "w342";
@@ -61,7 +71,7 @@ public class Movie {
         posterPath = poster_path;
     }
     public String getPosterPath(){
-        return THEMOVIEDB_BASE_IMAGE_URL + POSTER_IMAGE_PATH + posterPath;
+        return this.posterPath;
     }
 
     public void setOriginalLanguage(String original_language){
@@ -82,7 +92,7 @@ public class Movie {
         backdropPath = backdrop_path;
     }
     public String getBackdropPath(){
-        return THEMOVIEDB_BASE_IMAGE_URL + BACKDROP_IMAGE_PATH + backdropPath;
+        return this.backdropPath;
     }
 
     public  void setOverview(String movie_overview){
@@ -97,5 +107,15 @@ public class Movie {
     }
     public String getReleaseDate(){
         return releaseDate;
+    }
+
+    @Ignore
+    public String getPosterImageUrl(){
+        return THEMOVIEDB_BASE_IMAGE_URL + POSTER_IMAGE_PATH + posterPath;
+    }
+
+    @Ignore
+    public String getBackdropImageUrl(){
+        return THEMOVIEDB_BASE_IMAGE_URL + BACKDROP_IMAGE_PATH + backdropPath;
     }
 }

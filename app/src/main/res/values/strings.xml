@@ -1,12 +1,15 @@
 <resources>
     <string name="app_name">Popular Movies App</string>
-    <string name="the_movie_db_api_key">{{your_api_key}}</string>
     <string name="param_sort_by_rating">top_rated</string>
     <string name="param_sort_by_popularity">popular</string>
+    <string name="param_url_reviews">/reviews</string>
+    <string name="param_url_videos">/videos</string>
     <string name="title_action_sort_by_popularity">Most Popular</string>
     <string name="title_action_sort_by_rating">Highest Rating</string>
+    <string name="title_action_sort_by_favorite">Favorite</string>
     <string name="detail_overview_label">Synopsis</string>
-    <string name="detail_user_rating_label">User Score:</string>
-    <string name="detail_release_date_label">Release Date:</string>
+    <string name="detail_review_label">Reviews</string>
+    <string name="detail_video_label">Trailers</string>
     <string name="error_no_network">Internet connection is needed!!!</string>
+    <string name="max_user_rating">/10</string>
 </resources>

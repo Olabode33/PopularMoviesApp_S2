@@ -3,6 +3,8 @@ package com.olabode33.android.popularmoviesapp.utils;
 import android.util.Log;
 
 import com.olabode33.android.popularmoviesapp.model.Movie;
+import com.olabode33.android.popularmoviesapp.model.MovieReview;
+import com.olabode33.android.popularmoviesapp.model.MovieVideo;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,6 +18,7 @@ import java.util.List;
  */
 
 public class JsonUtils {
+    //Movie Json Key
     public static final String JSON_MOVIE_KEY_RESULTS = "results";
     public static final String JSON_MOVIE_KEY_ID = "id";
     public static final String JSON_MOVIE_KEY_VOTE_AVERAGE = "vote_average";
@@ -27,6 +30,19 @@ public class JsonUtils {
     public static final String JSON_MOVIE_KEY_BACKDROP_PATH = "backdrop_path";
     public static final String JSON_MOVIE_KEY_OVERVIEW = "overview";
     public static final String JSON_MOVIEW_KEY_RELEASE_DATE = "release_date";
+
+    //Movie Reviews JSON Keys
+    public static final String JSON_MOVIE_REVIEW_KEY_AUTHOR = "author";
+    public static final String JSON_MOVIE_REVIEW_KEY_CONTENT = "content";
+    public static final String JSON_MOVIE_REVIEW_KEY_URL = "url";
+
+    //Movie Videos JSON Keys
+    public static final String JSON_MOVIE_VIDEO_KEY_KEY = "key";
+    public static final String JSON_MOVIE_VIDEO_KEY_NAME = "name";
+    public static final String JSON_MOVIE_VIDEO_KEY_SITE = "site";
+    public static final String JSON_MOVIE_VIDEO_KEY_SIZE = "size";
+    public static final String JSON_MOVIE_VIDEO_KEY_TYPE = "type";
+
 
     public static Movie parseMovieJson(JSONObject jsonMovie){
         String movie_id = jsonMovie.optString(JSON_MOVIE_KEY_ID);
@@ -45,6 +61,30 @@ public class JsonUtils {
                                 original_title, backdrop_path, movie_overview, release_date);
 
         return movie;
+    }
+
+    public static MovieReview parseMovieReviewJson(JSONObject jsonMovieReview, String movie_id){
+        String review_author = jsonMovieReview.optString(JSON_MOVIE_REVIEW_KEY_AUTHOR);
+        String review_content = jsonMovieReview.optString(JSON_MOVIE_REVIEW_KEY_CONTENT);
+        String review_id = jsonMovieReview.optString(JSON_MOVIE_KEY_ID);
+        String review_url = jsonMovieReview.optString(JSON_MOVIE_REVIEW_KEY_URL);
+
+        //Create new MovieReview object
+        MovieReview movieReview = new MovieReview(movie_id, review_author, review_content, review_id, review_url);
+        return  movieReview;
+    }
+
+    public static MovieVideo parseMovieVideoJson(JSONObject jsonMovieVideo, String movie_id){
+        String video_id = jsonMovieVideo.optString(JSON_MOVIE_KEY_ID);
+        String video_key = jsonMovieVideo.optString(JSON_MOVIE_VIDEO_KEY_KEY);
+        String video_name = jsonMovieVideo.optString(JSON_MOVIE_VIDEO_KEY_NAME);
+        String video_site = jsonMovieVideo.optString(JSON_MOVIE_VIDEO_KEY_SITE);
+        String video_size = jsonMovieVideo.optString(JSON_MOVIE_VIDEO_KEY_SIZE);
+        String video_type = jsonMovieVideo.optString(JSON_MOVIE_VIDEO_KEY_TYPE);
+
+        //Create new MovieVideo object
+        MovieVideo movieVideo = new MovieVideo(movie_id, video_id, video_key, video_name, video_site, video_size, video_type);
+        return  movieVideo;
     }
 
     public static List<Movie> parseMoviesListJson(String json) {
@@ -68,6 +108,54 @@ public class JsonUtils {
         }
 
         return movieList;
+    }
+
+    public static List<MovieReview> parseMovieReviewsListJson(String json){
+        List<MovieReview> movieReviewList = new ArrayList<MovieReview>();
+
+        try{
+            JSONObject jsonMovieReviewObject = new JSONObject(json);
+            String movie_id = jsonMovieReviewObject.optString(JSON_MOVIE_KEY_ID);
+            JSONArray jsonMovieReviewArray = jsonMovieReviewObject.getJSONArray(JSON_MOVIE_KEY_RESULTS);
+
+            if(jsonMovieReviewArray != null){
+                for(int i = 0; i<jsonMovieReviewArray.length(); i++){
+                    JSONObject jsonMovieReviewObj = jsonMovieReviewArray.getJSONObject(i);
+                    MovieReview movieReviewOjb = parseMovieReviewJson(jsonMovieReviewObj, movie_id);
+
+                    movieReviewList.add(movieReviewOjb);
+                }
+            }
+
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        return movieReviewList;
+    }
+
+    public static List<MovieVideo> parseMovieVideoListJson(String json){
+        List<MovieVideo> movieVideoList = new ArrayList<MovieVideo>();
+
+        try{
+            JSONObject jsonMovieVideoObject = new JSONObject(json);
+            String movie_id = jsonMovieVideoObject.optString(JSON_MOVIE_KEY_ID);
+            JSONArray jsonMovieVideoArray = jsonMovieVideoObject.getJSONArray(JSON_MOVIE_KEY_RESULTS);
+
+            if(jsonMovieVideoArray != null){
+                for(int i = 0; i<jsonMovieVideoArray.length(); i++){
+                    JSONObject jsonMovieVideoObj = jsonMovieVideoArray.getJSONObject(i);
+                    MovieVideo movieVideoObj = parseMovieVideoJson(jsonMovieVideoObj, movie_id);
+
+                    movieVideoList.add(movieVideoObj);
+                }
+            }
+
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        return movieVideoList;
     }
 
     private static List<String> jsonArrayList(JSONArray jsonArray){
